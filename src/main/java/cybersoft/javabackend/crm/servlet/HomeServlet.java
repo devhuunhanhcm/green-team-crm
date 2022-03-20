@@ -1,6 +1,7 @@
 package cybersoft.javabackend.crm.servlet;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpSession;
 import cybersoft.javabackend.crm.model.Job;
 import cybersoft.javabackend.crm.model.User;
 import cybersoft.javabackend.crm.service.JobService;
-import cybersoft.javabackend.crm.service.UserService;
 import cybersoft.javabackend.crm.util.JspConst;
 import cybersoft.javabackend.crm.util.UrlConst;
 
@@ -23,12 +23,10 @@ import cybersoft.javabackend.crm.util.UrlConst;
 public class HomeServlet extends HttpServlet {
 	User user;
 	private JobService jobService;
-	private UserService userService;
 	
 	@Override
 	public void init() throws ServletException {
 		jobService = new JobService();
-		userService = new UserService();
 	}
 
 	@Override
@@ -39,19 +37,8 @@ public class HomeServlet extends HttpServlet {
 		HttpSession session = req.getSession();
 		user = (User) session.getAttribute("user");
 
-		lstJob = jobService.getAllJobsByUserID(user.getId());
-		if(user.getRole().getId()!=3) {
-			lstJob.addAll(jobService.getAllJobsByManagerID(user.getId()));
-		}
-		List<Integer> numUser;
-		if(lstJob!=null) {
-			Collections.reverse(lstJob);
-			numUser = new ArrayList<>();
-			for (Job job : lstJob) {
-				numUser.add(userService.countUserByJob(job.getId()));
-			}
-			req.setAttribute("numUser", numUser);
-		}
+		lstJob = jobService.getAllJobsByUser(user.getId());
+		Collections.reverse(lstJob);
 		req.setAttribute("lstJob", lstJob);
 		req.setAttribute("user", user);
 		req.getRequestDispatcher(JspConst.HOME).forward(req, resp);

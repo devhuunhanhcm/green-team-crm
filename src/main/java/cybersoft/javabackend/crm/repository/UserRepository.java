@@ -26,7 +26,7 @@ public class UserRepository {
 				Role role = new Role();
 				User user = new User();
 				
-				role.setId(res.getInt("r.id"));
+				role.setId(res.getInt("id"));
 				role.setName(res.getString("name"));
 				role.setDescription(res.getString("description"));
 				
@@ -74,77 +74,8 @@ public class UserRepository {
 		}finally {
 			conn.close();
 		}
-		return true;	
-	}
-
-	public List<User> getListUserByRole(int roleID) {
-		List<User> lstUser = new ArrayList<>();
-
-		try {
-			Connection conn = MySqlConnection.getConnection();
-			String query = "select * from users u join roles r on u.role_id = r.id where role_id = ?;";
-			PreparedStatement statement = conn.prepareStatement(query);
-			statement.setInt(1, roleID);
-			ResultSet res = statement.executeQuery();
-			while (res.next()) {
-				Role role = new Role();
-				User user = new User();
-				
-				role.setId(res.getInt("id"));
-				role.setName(res.getString("name"));
-				role.setDescription(res.getString("description"));
-				
-				user.setId(res.getInt("u.id"));
-				user.setEmail(res.getString("email"));
-				user.setPassword(res.getString("password"));
-				user.setName(res.getString("fullname"));
-				user.setPhone(res.getString("phone"));
-				user.setAddress(res.getString("address"));
-				user.setRole(role);
-				lstUser.add(user);
-			}
-			conn.close();
-			return lstUser;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+		return true;
+		
 	
-	public List<User> getListUserByJob(int jobID) {
-		List<User> lstUser = new ArrayList<>();
-
-		try {
-			Connection conn = MySqlConnection.getConnection();
-			String query = "select distinct u.*, r.* from users u join tasks t on t.user_id = u.id"
-					+ " join jobs j on j.id = t.job_id"
-					+ " join roles r on r.id = u.role_id"
-					+ " where j.id = ?;";
-			PreparedStatement statement = conn.prepareStatement(query);
-			statement.setInt(1, jobID);
-			ResultSet res = statement.executeQuery();
-			while (res.next()) {
-				Role role = new Role();
-				User user = new User();
-				
-				role.setId(res.getInt("id"));
-				role.setName(res.getString("name"));
-				role.setDescription(res.getString("description"));
-				
-				user.setId(res.getInt("u.id"));
-				user.setEmail(res.getString("email"));
-				user.setPassword(res.getString("password"));
-				user.setName(res.getString("fullname"));
-				user.setPhone(res.getString("phone"));
-				user.setAddress(res.getString("address"));
-				user.setRole(role);
-				lstUser.add(user);
-			}
-			conn.close();
-			return lstUser;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 }
